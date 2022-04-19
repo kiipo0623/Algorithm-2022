@@ -16,6 +16,16 @@ def split_team(check, idx, depth, fin):
     check[idx] = False
     split_team(check, idx+1, depth, fin)
 
+def make_team(team):
+    ret = []
+    for t in team:
+        another_t= []
+        for i in range(N):
+            if i not in t:
+                another_t.append(i)
+        ret.append((tuple(t), tuple(another_t)))
+    print(list(set(ret)))
+
 def check_sum(p1, p2):
     sum_ = 0
     sum_ += persons[p1][p2]
@@ -57,26 +67,29 @@ for _ in range(N):
 ck = [False] * N
 team = []
 split_team(ck, 0, 0, int(N/2))
+new_team = make_team(team)
+print(new_team)
 
-answer = int(1e9)
 
-for teamA in team:
-    teamB = []
-    for i in range(N):
-        if i not in teamA:
-            teamB.append(i)
-
-    Ateam = []
-    Bteam = []
-
-    Ateam_combi([], 0, teamA)
-    Bteam_combi([], 0, teamB)
-
-    asum, bsum = 0, 0
-    for a in Ateam:
-        asum += check_sum(a[0], a[1])
-    for b in Bteam:
-        bsum += check_sum(b[0],b[1])
-
-    answer = min(answer, abs(asum-bsum))
-print(answer)
+# answer = int(1e9)
+#
+# for teamA in team:
+#     teamB = []
+#     for i in range(N):
+#         if i not in teamA:
+#             teamB.append(i)
+#
+#     Ateam = []
+#     Bteam = []
+#
+#     Ateam_combi([], 0, teamA)
+#     Bteam_combi([], 0, teamB)
+#
+#     asum, bsum = 0, 0
+#     for a in Ateam:
+#         asum += check_sum(a[0], a[1])
+#     for b in Bteam:
+#         bsum += check_sum(b[0],b[1])
+#
+#     answer = min(answer, abs(asum-bsum))
+# print(answer)
