@@ -1,71 +1,67 @@
-from collections import deque
 from copy import deepcopy
-
-def game(newladders):
-    temp = deepcopy(graph)
-    for newlad in newladders:
-        row, col = newlad
-        temp[row][col] = 1
-
-    for i in range(1,N+1):
-        nrow, ncol = 1, i
-        while nrow<=H:
-            if temp[nrow][ncol] == 1:
-                ncol += 1
-                nrow += 1
-            elif temp[nrow][ncol-1] == 1:
-                ncol -= 1
-                nrow += 1
-            else:
-                nrow += 1
-        if ncol != i:
+def do_simulation(g):
+    for i in range(1, N+1):
+        now = i
+        for j in range(1, H+1):
+            if g[j][now] == 1:
+                now += 1
+            elif g[j][now-1] == 1:
+                now -= 1
+        if now != i:
             return False
     return True
-    # 새 사다리 설치
-    # 라인의 수만큼 반복문
-    # 안에서 while문 사용하여 결과 확인
 
-def dfs(depth, maxdepth, q):
-    global answer, candidate
-    if depth == maxdepth:
-        candidate.add(tuple(sorted(q)))
+def make_graph(queue):
+    temp_graph = deepcopy(graph)
+    for sero, garo in queue:
+        temp_graph[sero][garo] = True
+    if do_simulation(temp_graph):
+        return True
+    else:
+        return False
+
+def make_combination(maxdepth, queue):
+    global answer
+    if answer != 4:
         return
+    if len(queue) == maxdepth:
+        if sorted(queue) in already_check:
+            return
+
+        already_check.append(sorted(queue))
+        if make_graph(queue):
+            answer = maxdepth
+            return
+        else:
+            return
 
     for i in range(1, H+1):
         for j in range(1, N):
-            if [i,j] in ladder or [i,j-1] in ladder or [i, j+1] in ladder:
+            if (i, j) in origin_ladder or (i, j-1) in origin_ladder or (i, j+1) in origin_ladder:
                 continue
-            if (i,j) in q:
+            if (i, j) in queue:
                 continue
-            q.append((i, j))
-            dfs(depth+1, maxdepth, q)
-            q.pop()
+            queue.append((i, j))
+            make_combination(maxdepth, queue)
+            queue.pop()
 
 
 N, M, H = map(int, input().split())
-graph = [[0]*(N+1) for _ in range(H+1)]
-ladder = []
-
-answer = -1
-
+origin_ladder = []
+graph = [[False]*(N+1) for _ in range(H+1)]
 for _ in range(M):
     a, b = map(int, input().split())
-    graph[a][b] = 1
-    ladder.append([a, b])
+    origin_ladder.append((a, b))
+    graph[a][b] = True
 
-
+answer = 4
 for i in range(0, 4):
-    if answer != -1:
+    already_check = []
+    make_combination(i, [])
+    if answer != 4:
         break
-    queue = deque()
-    candidate = set()
-    dfs(0, i, queue)
 
-    for c in candidate: # 한번에 놓는 사다리의 개수
-        if game(c):
-            answer = len(c)
-            break
-
-print(answer)
-
-
+if answer<4:
+    print(answer)
+else:
+    print(-1)
