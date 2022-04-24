@@ -1,43 +1,19 @@
-def air_up():
-    dx = [0, -1, 0, 1]
-    dy = [1, 0, -1, 0]
-    direct = 0
-    before = 0
-    x, y = up, 1
-    while True:
-        nx = x + dx[direct]
-        ny = y + dy[direct]
-        if x == up and y == 0:
-            break
-        if nx < 0 or nx >= r or ny < 0 or ny >= c:
-            direct += 1
-            continue
-        arr[x][y], before = before, arr[x][y]
-        x = nx
-        y = ny
+def notcircle2(graph, now):
+    for i in range(now[0] - 2, -1, -1):
+        graph[i + 1][0] = graph[i][0]
+    for i in range(1, C):
+        graph[0][i - 1] = graph[0][i]
+    for i in range(1, now[0] + 1):
+        graph[i - 1][-1] = graph[i][-1]
+    for i in range(C - 2, 0, -1):
+        graph[now[0]][i + 1] = graph[now[0]][i]
+    graph[now[0]][1] = 0
+    return graph
 
-def air_down():
-    dx = [0, 1, 0, -1]
-    dy = [1, 0, -1, 0]
-    direct = 0
-    before = 0 # before값을 변경
-    x, y = down, 1
-    while True:
-        nx = x + dx[direct]
-        ny = y + dy[direct]
-        if x == down and y == 0:
-            break
-        if nx<0 or nx>=r or ny<0 or ny>=c:
-            direct += 1
-            continue
-        arr[x][y], before = before, arr[x][y]
-        x = nx
-        y = ny
-
-arr = [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15]]
-up = 2
-down = 0
-r, c = 3, 5
-air_up()
-air_down()
-print(arr)
+R, C = 3, 5
+n = [2, 3]
+graph = [[1,2,3,4,5],
+ [6,7,8,9,10],
+ [11,12,13,14,15]]
+# print(notcircle1(graph, n))
+print(notcircle2(graph, n))
