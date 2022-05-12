@@ -33,3 +33,8 @@ def solution(food_times, k):
     answer = li[remain_iteration]
 
     return answer
+
+
+print(solution(
+    [2, 2, 2, 2, 2], 9
+))
