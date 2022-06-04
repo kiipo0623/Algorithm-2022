@@ -1,49 +1,23 @@
-from collections import defaultdict
-import sys
-sys.setrecursionlimit(10**6)
+from itertools import combinations as combi
 
-link_dict = defaultdict(list)
-need_dict = defaultdict(list)
+def solution(relation):
+    row = len(relation)
+    col = len(relation[0])
 
-def solution(n, path, order):
-    for a, b in path:
-        link_dict[a].append(b)
-        link_dict[b].append(a)
+    candidates = []
+    for i in range(1, col+1):
+        candidates.extend(combi(range(col), i))
 
-    set_need_dict(0, -1)
+    unique = []
+    for candi in candidates:
+        tmp = [tuple([item[i] for i in candi]) for item in relation]
+        if len(set(tmp)) == row:
+            unique.append(candi)
 
-    for a, b in order:
-        need_dict[b].append(a)
+    answer = set(unique)
+    for i in range(len(unique)): # 크기가 작은것부터 담기니까
+        for j in range(i+1, len(unique)):
+            if len(unique[i]) == len(set(unique[i])) & set(unique[j]):
+                answer.discard(unique[j])
 
-    visited = [False for _ in range(n)]
-    recur = [False for _ in range(n)]
-    for i in range(n):
-        if is_cycle(i, visited, recur):
-            return False
-    return True
-
-def set_need_dict(node, parent_node):
-    for next_node in link_dict[node]:
-        if next_node == parent_node: # 부모 노드면 패스
-            continue
-        need_dict[next_node].append(node)
-        set_need_dict(next_node, node)
-
-def is_cycle(node, visited, recur):
-    if visited[node]:
-        return True
-    if recur[node]:
-        return False
-
-    visited[node] = True #방문 체크
-    recur[node] = True # 이 하 노드 사이클 존재 여부 확인 체크 : True상태로 내버려둔다
-
-    for parent_node in need_dict[node]:
-        if is_cycle(parent_node, visited, recur):
-            return True
-    visited[node] = False # 리프 노드까지 갔을 때
-    return False
-
-print(solution(
-    9, [[0,1],[0,3],[0,7],[8,1],[3,6],[1,2],[4,7],[7,5]], [[8,5],[6,7],[4,1]]
-))
+    return len(answer)
