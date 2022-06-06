@@ -1,23 +1,35 @@
-from itertools import combinations as combi
+from collections import defaultdict, deque
+from copy import deepcopy
 
-def solution(relation):
-    row = len(relation)
-    col = len(relation[0])
+is_wolf = list()
+num2edges = defaultdict(list)
+max_sheep = 0
 
-    candidates = []
-    for i in range(1, col+1):
-        candidates.extend(combi(range(col), i))
+def find_max_recursive(current_loc, used, nsheep, nwolf, can_go):
+    global max_sheep
+    if used[current_loc]: # 현재 노드를 방문한 경우
+        return
 
-    unique = []
-    for candi in candidates:
-        tmp = [tuple([item[i] for i in candi]) for item in relation]
-        if len(set(tmp)) == row:
-            unique.append(candi)
+    used[current_loc] = True # 방문 기록
+    if is_wolf[current_loc]: # 늑대인 경우
+        nwolf += 1
+    else:
+        nsheep += 1
+        max_sheep = max(max_sheep, nsheep)
 
-    answer = set(unique)
-    for i in range(len(unique)): # 크기가 작은것부터 담기니까
-        for j in range(i+1, len(unique)):
-            if len(unique[i]) == len(set(unique[i])) & set(unique[j]):
-                answer.discard(unique[j])
+    if nsheep <= nwolf:
+        return
 
-    return len(answer)
+    can_go.extend(num2edges[current_loc])
+    for next_loc in can_go:
+
+
+def solution(info, edges):
+    global is_wolf, num2edges, max_sheep
+    is_wolf = info
+
+    for e_from, e_to in edges:
+        num2edges[e_from].append(e_to)
+
+    find_max_recursive(0, used, 0, 0, [])
+    return max_sheep
